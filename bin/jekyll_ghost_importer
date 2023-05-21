@@ -37,6 +37,10 @@ class Post < OpenStruct
     @tags ||= []
   end
 
+  def authors
+    @author ||= []
+  end
+
   private
 
   def folder
@@ -59,7 +63,8 @@ class Post < OpenStruct
   def front_matter
     front_matter_hash = {
       'layout' => "post",
-      'title'  => title
+      'title'  => title,
+      'author' => authors,
     }
 
     front_matter_hash['featured'] = true if featured == 1
@@ -106,8 +111,11 @@ class PostRepository
     @json = json
     @posts = (data[:posts] || []).map { |post_json| Post.new(post_json) }
     @tags = data[:tags] || []
+    @users = data[:users] || []
     @posts_tags = data[:posts_tags] || []
+    @posts_authors = data[:posts_authors] || []
     assign_tags_to_posts
+    assign_authors_to_posts
   end
 
   def drafts
@@ -124,12 +132,24 @@ class PostRepository
     end
   end
 
+  def assign_authors_to_posts
+    @posts_authors.each do |post_author|
+      post = get_post(post_author[:post_id])
+      user = get_user(post_author[:author_id])
+      post.authors << user[:name]
+    end
+  end
+
   def get_post id
     @posts.detect { |post| post.id == id }
   end
 
   def get_tag id
     @tags.detect { |tag| tag[:id] == id }
+  end
+
+  def get_user id
+    @users.detect { |user| user[:id] == id }
   end
 
   def data
