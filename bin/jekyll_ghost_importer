@@ -77,7 +77,7 @@ class Post < OpenStruct
   end
 
   def full_body
-    front_matter.to_yaml + "---\n\n" + markdown_body
+    front_matter.to_yaml + "---\n\n" + (codeinjection_head ? + codeinjection_head + "\n" : "") + markdown_body + "\n" + (codeinjection_foot ? codeinjection_foot + "\n" : "")
   end
 
   def markdown_body
