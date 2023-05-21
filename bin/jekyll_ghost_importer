@@ -64,6 +64,7 @@ class Post < OpenStruct
     front_matter_hash = {
       'layout' => "post",
       'title'  => title,
+      'permalink' => "/#{slug}/",
       'author' => authors,
     }
 
